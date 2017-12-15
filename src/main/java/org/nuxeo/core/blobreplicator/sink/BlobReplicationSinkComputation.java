@@ -1,13 +1,17 @@
-package org.nuxeo.core;
+package org.nuxeo.core.blobreplicator.sink;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.core.blobreplicator.source.KafkaAwareBlobProviderWrapper;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
@@ -19,6 +23,8 @@ import org.nuxeo.runtime.stream.StreamProcessorTopology;
 public class BlobReplicationSinkComputation implements StreamProcessorTopology {
 
 	private static final Log log = LogFactory.getLog(BlobReplicationSinkComputation.class);
+
+	public static final String REMOTE_SERVER_KEY = "org.nuxeo.blobreplicator.server";
 
 	public static final String COMPUTATION_NAME = "BlobReplicator";
 
@@ -57,9 +63,11 @@ public class BlobReplicationSinkComputation implements StreamProcessorTopology {
 
 			try {
 				String digest = new String(record.data, "UTF-8");
-
 				Blob blob = fetchRemoteBlob(digest);
-
+				if (blob == null) {
+					log.error("Unable to fetch Blob for digst" + digest);
+					return;
+				}
 				storeBlob(blob);
 
 			} catch (UnsupportedEncodingException e) {
@@ -70,7 +78,15 @@ public class BlobReplicationSinkComputation implements StreamProcessorTopology {
 		}
 
 		protected Blob fetchRemoteBlob(String digest) {
-			// XXX
+
+			String urlString = Framework.getProperty(REMOTE_SERVER_KEY) + "binarydup?key=" + digest;
+			URL url;
+			try {
+				url = new URL(urlString);
+				return new URLBlob(url);
+			} catch (MalformedURLException e) {
+				log.error("bad blob download url", e);
+			}
 			return null;
 		}
 

@@ -24,7 +24,13 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-stream</artifactId>
     </dependency>
-   
+
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+    </dependency>
+
     <!-- Test Scope -->
     <dependency>
       <groupId>junit</groupId>

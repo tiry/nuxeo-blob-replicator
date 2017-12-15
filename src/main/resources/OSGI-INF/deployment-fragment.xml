@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<fragment version="1">
+
+   <extension target="web#LAST-SERVLET">
+
+    <servlet>
+      <servlet-name>Nuxeo BinaryDuplicator Source</servlet-name>
+      <servlet-class>org.nuxeo.core.blobreplicator.source.BinaryDownloadServlet</servlet-class>
+      <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+      <servlet-name>Nuxeo BinaryDuplicator Source</servlet-name>
+      <url-pattern>/binarydup</url-pattern>
+    </servlet-mapping>
+
+  </extension>
+
+</fragment>
+

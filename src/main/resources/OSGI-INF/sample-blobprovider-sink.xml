@@ -5,7 +5,7 @@
 	<extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
 		<streamProcessor name="blobReplicator" logConfig="bloblog"
 			defaultConcurrency="1" defaultPartitions="1"
-			class="org.nuxeo.core.BlobReplicationSinkComputation">
+			class="org.nuxeo.core.blobreplicator.sink.BlobReplicationSinkComputation">
 			<option name="batchSize">1</option>
 			<option name="batchTimeThresholdMs">100</option>
 		</streamProcessor>

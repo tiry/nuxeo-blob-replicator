@@ -1,4 +1,4 @@
-package org.nuxeo.core;
+package org.nuxeo.core.blobreplicator.source;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
