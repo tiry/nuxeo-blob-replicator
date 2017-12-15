@@ -78,6 +78,22 @@ Typically:
         </extension>
     </component>
 
+# Security
+
+The current implememtation does not provide any security: provided you know the digest you can fetch the blob.
+
+Next step is to add a token system:
+
+ - for each Blob on the source
+ 	- generate a token (i.e. GUID)
+ 	- store the `(token,digest)` pair in the KVStore
+ 	- send the `(token,digest)` pair  via nuxeo-stream
+ - for Download
+ 	- the Sink/Consumer will call using the digest
+ 	- the Download does the token=>digest translation and deletes the KV entry 	
+
+This provide a single usage random key for each download and this is secured as long as the Kafla streams are secured.
+
 # Requirements
 
 This module requires Java 8 and Maven 3.
