@@ -1,0 +1,14 @@
+<component name="org.nuxeo.blobprovider.source.config">
+
+	<require>org.nuxeo.stream.defaultConfig</require>
+
+	<extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+		<streamProcessor name="blobReplicator" logConfig="bloblog"
+			defaultConcurrency="1" defaultPartitions="1"
+			class="org.nuxeo.core.BlobReplicationSinkComputation">
+			<option name="batchSize">1</option>
+			<option name="batchTimeThresholdMs">100</option>
+		</streamProcessor>
+	</extension>
+
+</component>

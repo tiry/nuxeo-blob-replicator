@@ -1,0 +1,9 @@
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxep
+Bundle-Version: 1.0.0
+Bundle-Name: nuxeo-blobmanager-replicator
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.nuxeo.core.blobmanager.replicator;singleton=true
+Nuxeo-Component: OSGI-INF/blobstore-stream-contrib.xml

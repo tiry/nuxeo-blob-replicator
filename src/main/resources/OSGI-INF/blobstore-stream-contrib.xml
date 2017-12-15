@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.blobprovider.log">
+
+ <require>org.nuxeo.stream.defaultConfig</require>
+
+  <extension point="logConfig" target="org.nuxeo.runtime.stream.service">
+     <logConfig name="bloblog" type="kafka">
+        <option name="kafkaConfig">default</option>
+        <log name="bloblog" size="1" />
+     </logConfig>
+  </extension>
+  
+</component>
