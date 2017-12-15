@@ -11,19 +11,72 @@ The ideal is to leverage Kafka and KafkaMirror to propage the digest of every ne
  
 # Configuration
 
-## nuxeo.conf
+### On the Source server
+
+**nuxeo.conf**
 
 You need to unable Kafka integration.
 
     kafka.enabled=true
 
-On the source Nuxeo, copy src/main/resources/sample-blobprovider-source.xml in config (renamming as -config).
+**config**
 
-=> this declares a wrapper BlobProvider that writes to `nuxeo-stream`
+You need to declares a wrapper BlobProvider that writes to `nuxeo-stream` before delegating to your "real" blobmanager
 
-On the target Nuxeo, copy src/main/resources/sample-blobprovider-sink.xml in config (renamming as -config).
+You can use `src/main/resources/sample-blobprovider-source.xml` as an example
 
-=> this declares a Computation tha consumes the stream
+(if you copy directly the file in the `config` do not forget to rename it with a  `-config.xml` suffix).
+
+Provided you use the default BlobProvider, this should look something like this:
+
+    <component name="org.nuxeo.blobprovider.source.config">
+      <require>default-repository-config</require>
+
+      <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
+        <blobprovider name="default">
+          <class>org.nuxeo.core.blobreplicator.source.KafkaAwareBlobProviderWrapper</class>
+          <property name="backend">org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</property>
+          <property name="path"></property>
+          <property name="key"></property>
+        </blobprovider>
+      </extension>
+    </component>
+
+
+### On the Destination / Sink server
+
+
+**nuxeo.conf**
+
+You need to unable Kafka integration.
+
+    kafka.enabled=true
+
+You also need to define the source server that will be used to download the blobs
+
+    org.nuxeo.blobreplicator.server=http://sourceserver:port/nuxeo/
+
+**config**
+
+You need to declare a `Computation` that will consumes the `bloblog` stream, download the blobs and store then locally.
+
+You can use `src/main/resources/sample-blobprovider-sink.xml` as an example
+
+(if you copy directly the file in the `config` do not forget to rename it with a  `-config.xml` suffix).
+
+Typically:
+
+    <component name="org.nuxeo.blobprovider.source.config">     
+        <require>org.nuxeo.stream.defaultConfig</require>      
+        <extension target="org.nuxeo.runtime.stream.service" point="streamProcessor">
+                <streamProcessor name="blobReplicator" logConfig="bloblog"
+                        defaultConcurrency="1" defaultPartitions="1"
+                        class="org.nuxeo.core.blobreplicator.sink.BlobReplicationSinkComputation">
+                        <option name="batchSize">1</option>
+                        <option name="batchTimeThresholdMs">100</option>
+                </streamProcessor>
+        </extension>
+    </component>
 
 # Requirements
 

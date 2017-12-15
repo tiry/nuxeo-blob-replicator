@@ -56,6 +56,7 @@ public class KafkaAwareBlobProviderWrapper implements BlobProvider {
 		}
 		return appender;
 	}
+
 	protected void addOpToLog(String blobKey) {
 		try {
 
