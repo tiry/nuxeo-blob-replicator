@@ -1,0 +1,18 @@
+
+<component name="org.nuxeo.blobprovider.kv.contrib">
+
+  <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
+    <store name="blobReplicatorKV" class="org.nuxeo.runtime.kv.MemKeyValueStore">
+    </store>
+  </extension>
+
+<!-- 
+ <extension target="org.nuxeo.runtime.kv.KeyValueService" point="configuration">
+    <store name="blobReplicatorKV" class="org.nuxeo.ecm.core.mongodb.kv.MongoDBKeyValueStore">
+      <property name="collection">blobReplicatorKV</property>
+    </store>
+  </extension>
+ -->
+  
+</component>
+  

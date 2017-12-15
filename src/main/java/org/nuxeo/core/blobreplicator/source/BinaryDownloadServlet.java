@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.core.blobreplicator.SecurityHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
@@ -36,22 +37,18 @@ public class BinaryDownloadServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
 		String key = req.getParameter(KEY_PARAM);
-
 		String token = req.getParameter(TOKEN_PARAM);
 
-		if (!checkToken(token)) {
-			resp.sendError(HttpServletResponse.SC_FORBIDDEN);
-			return;
+		if (SecurityHelper.isSecurityEnabled()) {
+			if (token == null) {
+				resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+				return;
+			}
+			key = SecurityHelper.getDigest(token);
 		}
 
 		if (key == null) {
 			resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
-			return;
-		}
-
-		if ("test".equals(key)) {
-			resp.getWriter().write("Hello");
-			resp.setStatus(HttpServletResponse.SC_OK);
 			return;
 		}
 

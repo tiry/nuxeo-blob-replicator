@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.core.blobreplicator.SecurityHelper;
 import org.nuxeo.core.blobreplicator.source.KafkaAwareBlobProviderWrapper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
@@ -63,7 +64,8 @@ public class BlobReplicationSinkComputation implements StreamProcessorTopology {
 
 			try {
 				String digest = new String(record.data, "UTF-8");
-				Blob blob = fetchRemoteBlob(digest);
+				String token = record.key;
+				Blob blob = fetchRemoteBlob(token,digest);
 				if (blob == null) {
 					log.error("Unable to fetch Blob for digst" + digest);
 					return;
@@ -77,12 +79,16 @@ public class BlobReplicationSinkComputation implements StreamProcessorTopology {
 			}
 		}
 
-		protected Blob fetchRemoteBlob(String digest) {
+		protected Blob fetchRemoteBlob(String token, String digest) {
 
-			String urlString = Framework.getProperty(REMOTE_SERVER_KEY) + "binarydup?key=" + digest;
-			URL url;
+			String urlString = Framework.getProperty(REMOTE_SERVER_KEY) + "binarydup";
+			if (SecurityHelper.isSecurityEnabled()) {
+				urlString = urlString + "?token=" + token;				
+			} else {
+				urlString = urlString + "?key=" + digest;				
+			}
 			try {
-				url = new URL(urlString);
+				URL url = new URL(urlString);
 				return new URLBlob(url);
 			} catch (MalformedURLException e) {
 				log.error("bad blob download url", e);

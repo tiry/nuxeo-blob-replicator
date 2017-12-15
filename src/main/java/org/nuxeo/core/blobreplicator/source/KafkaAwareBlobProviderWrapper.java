@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.core.blobreplicator.SecurityHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobProvider;
@@ -59,11 +61,12 @@ public class KafkaAwareBlobProviderWrapper implements BlobProvider {
 
 	protected void addOpToLog(String blobKey) {
 		try {
-
-			String key = System.currentTimeMillis() + "-" + counter.incrementAndGet();
-			getOpLogAppender().append(0, Record.of(key, blobKey.getBytes(StandardCharsets.UTF_8)));
-
+			String key = UUID.randomUUID().toString();
+			getOpLogAppender().append(0, Record.of(key, blobKey.getBytes(StandardCharsets.UTF_8)));									
 			log.debug("added to oplog:" + blobKey);
+			if (SecurityHelper.isSecurityEnabled()) {
+				SecurityHelper.storeTuple(key, blobKey);	
+			}			
 		} catch (Exception e) {
 			log.error("Unable to add stream entry:" + blobKey, e);
 		}
